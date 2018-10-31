@@ -80,17 +80,17 @@ class Simulation(object):
         self.virus_name = virus_name
         self.mortality_rate = mortality_rate
         self.basic_repro_num = basic_repro_num
+        self.virus = Virus(virus_name, mortality_rate, basic_repro_num)
         self.population = self._create_population(initial_infected)
         self.file_name = "{}_simulation_pop_{}_vp_{}_infected_{}.txt".format(
             virus_name, population_size, vacc_percentage, initial_infected)
 
-        self.virus = Virus(virus_name, mortality_rate, basic_repro_num)
 
 
         # TODO: Create a Logger object and bind it to self.logger.  You should use this
         # logger object to log all events of any importance during the simulation.  Don't forget
         # to call these logger methods in the corresponding parts of the simulation!
-        self.logger = Logger(self.virus_name + '_log.txt')
+        self.logger = Logger(self.file_name + '_log.txt')
 
         # This attribute will be used to keep track of all the people that catch
         # the infection during a given time step. We'll store each newly infected
@@ -115,7 +115,7 @@ class Simulation(object):
                 # Create all the infected people first, and then worry about the rest.
                 # Don't forget to increment infected_count every time you create a
                 # new infected person!
-                population.append(Person(self.next_person_id, False, self.virus_name))
+                population.append(Person(self.next_person_id, False, self.virus))
                 infected_count += 1
                 self.next_person_id += 1
             else:
@@ -126,7 +126,7 @@ class Simulation(object):
                 # created as an unvaccinated person.
                 random_num = random.uniform(0,1)
                 if random_num < self.vacc_percentage:
-                    population.append(Person(self.next_person_id, True, self.virus_name))
+                    population.append(Person(self.next_person_id, True, self.virus))
                     self.next_person_id += 1
                 else:
                     population.append(Person(self.next_person_id, False))
@@ -185,7 +185,7 @@ class Simulation(object):
             should_continue = self._simulation_should_continue()
             
             time_step_counter += 1
-        print('The simulation has ended after {time_step_counter} turns.'.format(time_step_counter))
+        print('The simulation has ended after' + str(time_step_counter) + 'turns.')
 
     def time_step(self):
         # Finish this method!  This method should contain all the basic logic
@@ -201,7 +201,7 @@ class Simulation(object):
             #               - Increment interaction counter by 1.
         infected_people = [] 
         for person in self.population:
-            if person.infection != None:
+            if person.infection != None and person.is_alive:
                 infected_people.append(person)
 
         for infected in infected_people:
@@ -274,6 +274,10 @@ class Simulation(object):
         #   - Set this Person's .infected attribute to True.
         print(self.newly_infected)
         self.current_infected=0
+
+        for person in self.population:
+            if(person.infection != None):
+                person.did_survive_infection(self.mortality_rate)
 
         for _id in self.newly_infected:
             for person in self.population:
