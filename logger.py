@@ -91,11 +91,11 @@ class Logger(object):
                 output = f'{person1._id} infects {person2._id}'
             elif not did_infect:
                 if person2_vacc:
-                    output = f'{person1._id} didn't infect {person2._id} because vaccinated'
-                elif not person2_vacc:
-                    output = f'{person1._id} didn't infect {person2._id} because already sick'
+                    output = f'{person1._id} didn\'t infect {person2._id} because vaccinated'
+                elif person2_sick:
+                    output = f'{person1._id} didn\'t infect {person2._id} because already sick'
                 else:
-                    output = f'{person1._id} didn't infect {person2._id} because {person2._id} got lucky.'
+                    output = f'{person1._id} didn\'t infect {person2._id} because {person2._id} got lucky.'
             f.write(output + "\n")
         # You'll need to think
         # about how the booleans passed (or not passed) represent
@@ -127,7 +127,7 @@ class Logger(object):
         # Make sure to end every line with a '/n' character to ensure that each
         # event logged ends up on a separate line!
 
-    def log_time_step(self, time_step_number):
+    def log_time_step(self, time_step_number, current_infected):
         # TODO: Finish this method.  This method should log when a time step ends, and a
         # new one begins.  See the documentation for more information on the format of the log.
         # NOTE: Stretch challenge opportunity! Modify this method so that at the end of each time
@@ -143,5 +143,5 @@ class Logger(object):
         '''
         with open(self.file_name, "a") as f:
             next_time_step_number = time_step_number + 1
-            output = f'Time step {time_step_number} ended, beginning {next_time_step_number}'
-            f.write(output + "\n")s
+            output = f'Time step {time_step_number} ended, current infected: {current_infected}, beginning {next_time_step_number}'
+            f.write(output + "\n")
